@@ -6,13 +6,8 @@ from marshmallow.fields import String
 
 class BaseSchema(Schema):
     """Base schema"""
-    class Meta:
-        """Meta data"""
-        unknown = EXCLUDE
-        ordered = True
 
     model = None
-
     id = String(dump_only=True)
 
     def response_data(self, obj, message=None):
@@ -31,3 +26,8 @@ class BaseSchema(Schema):
         if self.model:
             return self.model(**data)
         return data
+
+    class Meta:
+        """Meta data"""
+        unknown = EXCLUDE
+        ordered = True

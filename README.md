@@ -3,7 +3,7 @@
 ## Setup App
 Run the following commands:
 
-- Ensure you have `Python 3.7.2`  installed from [here](https://www.python.org/downloads/release/python-372/)
+- Ensure you have `Python 3.7.7`  installed from [here](https://www.python.org/downloads/release/python-372/)
 - Install `pipenv` via: 
 ```bash
 pip install pipenv

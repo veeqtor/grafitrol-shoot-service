@@ -19,7 +19,7 @@ endpoint = api.route
 
 
 def register_blueprints(application):
-	"""Registers all blueprints
+    """Registers all blueprints
 
 	Args:
 		application (Obj): Flask Instance
@@ -27,11 +27,11 @@ def register_blueprints(application):
 		None
 	"""
 
-	application.register_blueprint(api_blueprint)
+    application.register_blueprint(api_blueprint)
 
 
 def create_app(current_env='development'):
-	"""
+    """
 	Creates the flask application instance
 	Args:
 		current_env (string): The current environment
@@ -39,36 +39,36 @@ def create_app(current_env='development'):
 		Object: Flask instance
 	"""
 
-	app = Flask(__name__)
-	origins = ['*']
-	
-	if current_env == 'development':
-		import logging
-		logging.basicConfig()
-		logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-	
-	CORS(app, origins=origins, supports_credentials=True)
-	app.config.from_object(app_config[current_env])
-	register_blueprints(app)
-	error_handlers(app)
-	
-	init_db()
-	Migrate(app, engine)
-	
-	@app.route('/', methods=['GET'])
-	def health():
-		"""Index Route"""
-		
-		return jsonify(data={
-			"status":
-				'success',
-			"message":
-				'Grafitrol Shoots service is healthy'
-		}, )
-	
-	@app.teardown_appcontext
-	def shutdown_session(exception=None):
-		"""Close the db session"""
-		db_session.remove()
-	
-	return app
+    app = Flask(__name__)
+    origins = ['*']
+
+    if current_env == 'development':
+        import logging
+        logging.basicConfig()
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+    CORS(app, origins=origins, supports_credentials=True)
+    app.config.from_object(app_config[current_env])
+    register_blueprints(app)
+    error_handlers(app)
+
+    init_db()
+    Migrate(app, engine)
+
+    import src.views
+
+    @app.route('/', methods=['GET'])
+    def health():
+        """Index Route"""
+
+        return jsonify(data={
+            "status": 'success',
+            "message": 'Grafitrol Shoots service is healthy'
+        }, )
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        """Close the db session"""
+        db_session.remove()
+
+    return app
