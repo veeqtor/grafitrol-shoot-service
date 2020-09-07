@@ -1,7 +1,6 @@
 """Configuration Module"""
 
 # System imports
-import os
 from pathlib import Path
 
 # Third party library
@@ -12,41 +11,40 @@ load_dotenv(dotenv_path=env_path, verbose=True)
 
 
 class Config(object):
-	"""
+    """
 	base app configuration class
 	"""
-	
-	TESTING = False
-	DEBUG = False
-	SQLALCHEMY_TRACK_MODIFICATIONS = False
-	
+
+    TESTING = False
+    DEBUG = False
+
 
 class Development(Config):
-	"""
+    """
 	Development config
 	"""
-	
-	DEBUG = True
+
+    DEBUG = True
 
 
 class Production(Config):
-	"""
+    """
 	Production config
 	"""
-	
-	pass
+
+    pass
 
 
 class Testing(Config):
-	"""
+    """
 	Test config
 	"""
-	
-	TESTING = True
-	
+
+    TESTING = True
+
 
 app_config = {
-	'development': Development,
-	'production': Production,
-	'testing': Testing
+    'development': Development,
+    'production': Production,
+    'testing': Testing
 }

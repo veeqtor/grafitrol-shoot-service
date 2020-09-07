@@ -1,5 +1,5 @@
 """API Initialization Module"""
-
+from dateutil import tz
 from dotenv import load_dotenv
 from flask import Flask, jsonify, Blueprint
 from flask_restplus import Api
@@ -7,7 +7,6 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from config import app_config
-from database.config import db_session, init_db, engine
 from utils.error_handler import error_handlers
 
 load_dotenv()
@@ -17,9 +16,13 @@ api = Api(api_blueprint)
 
 endpoint = api.route
 
+TIMEZONE = 'Africa/Lagos'
+local_tz = tz.gettz(TIMEZONE)
+utc = tz.UTC
+
 
 def register_blueprints(application):
-    """Registers all blueprints
+    """Registers all blueprints.
 
 	Args:
 		application (Obj): Flask Instance
@@ -32,12 +35,13 @@ def register_blueprints(application):
 
 def create_app(current_env='development'):
     """
-	Creates the flask application instance
+	Creates the flask application instance.
 	Args:
 		current_env (string): The current environment
 	Returns:
 		Object: Flask instance
 	"""
+    from database.config import db_session, init_db, engine
 
     app = Flask(__name__)
     origins = ['*']

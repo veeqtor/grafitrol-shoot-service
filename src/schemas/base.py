@@ -7,7 +7,7 @@ from marshmallow.fields import String
 class BaseSchema(Schema):
     """Base schema"""
 
-    model = None
+    __model__ = None
     id = String(dump_only=True)
 
     def response_data(self, obj, message=None):
@@ -23,8 +23,8 @@ class BaseSchema(Schema):
     def create_obj(self, data, **kwargs):
         """Create objects"""
 
-        if self.model:
-            return self.model(**data)
+        if self.__model__:
+            return self.__model__(**data)
         return data
 
     class Meta:
