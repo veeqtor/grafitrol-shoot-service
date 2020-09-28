@@ -129,6 +129,7 @@ class TestCoordinatorView:
 
         assert response_raw.status_code == 200
         assert response_json is not None
+        assert response_json['data']['timeslots'] is not None
 
     def test__coordinator_return_400_fails(self, client, db_session):
         """Should fail if no coordinator is available."""

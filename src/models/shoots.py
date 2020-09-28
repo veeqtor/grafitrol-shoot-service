@@ -1,4 +1,5 @@
 """Shoots model"""
+
 from sqlalchemy import Column, String, Text, Float, Integer
 from sqlalchemy.orm import relationship
 
@@ -15,7 +16,7 @@ class Shoot(BaseModel):
 
     name = Column(String(50), unique=True)
     description = Column(Text, nullable=True)
-    price = Column(Float, nullable=True)
+    price = Column(Float, nullable=False)
     duration = Column(Integer, default=30, nullable=False)
     reservations = relationship("Reservation",
                                 order_by=Reservation.id,

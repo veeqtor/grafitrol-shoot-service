@@ -66,6 +66,13 @@ def db_session():
 
 @pytest.fixture(scope="function")
 def new_coordinators(db_session):
-    """Create new coordinator"""
+    """Create new coordinators"""
     from tests.factories import CoordinatorFactory
     return CoordinatorFactory.create_batch(size=10)
+
+
+@pytest.fixture(scope="function")
+def new_shoots(db_session):
+    """Create new shoots"""
+    from tests.factories import ShootFactory
+    return ShootFactory.create_batch(size=10)
