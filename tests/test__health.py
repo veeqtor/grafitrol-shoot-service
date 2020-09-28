@@ -5,7 +5,6 @@ import json
 
 class TestFlaskApp:
     """Test the flask application"""
-
     def test_flask_application(self, client):
         """Should pass if the application starts successfully.
         Args:
@@ -13,7 +12,7 @@ class TestFlaskApp:
         Returns:
             None
         """
-        
+
         response_raw = client.get('/')
         response_json = json.loads(response_raw.data)
         assert response_raw.status_code == 200

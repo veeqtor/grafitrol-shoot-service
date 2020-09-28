@@ -1,23 +1,25 @@
 """Base model class"""
+from datetime import datetime
 
 from psycopg2 import errors
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, DateTime, String, exists
 
 from database.config import Base, db_session
 from utils.exceptions import DataConflictException
+from utils.id_generator import IDGenerator
 
 
 class ModelOperation(object):
     """Model operation"""
-    
+
     __abstract__ = True
 
     UNIQUE_VIOLATION_MSG = ''
 
     def save(self):
         """Save to the database."""
-        
+
         db_session.add(self)
         try:
             db_session.commit()
@@ -28,21 +30,60 @@ class ModelOperation(object):
 
     def update(self, **kwargs):
         """Update entries.
-        Args:
-            **kwargs: kwargs to update
-        Returns:
-            object: Model Instance
-        """
+		Args:
+			**kwargs: kwargs to update
+		Returns:
+			object: Model Instance
+		"""
         for field, value in kwargs.items():
             setattr(self, field, value)
         db_session.commit()
 
         return self
 
+    def delete(self):
+        """Delete an entry"""
 
-class BaseModel(Base, ModelOperation):
-    """User Model"""
-    
+        db_session.delete(self)
+        db_session.commit()
+
+    @classmethod
+    def get(cls, id):
+        """
+		Returns an entry by id
+		"""
+        return cls.query.filter_by(id=id).first()
+
+    @classmethod
+    def exists(cls, value, column='id'):
+        """Checks if an object exits in the database
+		Args:
+			value (str): The value to verify
+			column (str): The column to check. Defaults to 'id'
+		Returns:
+			bool: True if the value exists, False otherwise
+		"""
+        attr = getattr(cls, column)
+        return db_session.query(exists().where(attr == value)).scalar()
+
+
+class BaseAuditableModel(object):
+    """
+	Auditable Base Model
+	"""
+
     __abstract__ = True
-    
-    id = Column(Integer, primary_key=True)
+
+    version = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=datetime.now)
+    updated_at = Column(DateTime(timezone=True), onupdate=datetime.now)
+
+
+class BaseModel(Base, BaseAuditableModel, ModelOperation):
+    """
+	Base Model
+	"""
+
+    __abstract__ = True
+
+    id = Column(String(30), primary_key=True, default=IDGenerator.generate_id)
