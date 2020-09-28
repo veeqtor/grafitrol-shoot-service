@@ -7,7 +7,7 @@ from flask_restplus import Resource
 from sqlalchemy.orm import joinedload
 
 from main import endpoint
-from src.decorators.validate_id import validate_id
+from src.decorators.id_validation import validate_id
 from src.helpers.messages import ERROR_MSG
 from src.helpers.response import ResponseHandler
 from src.helpers.shoots_slots import get_preferred_coordinator
