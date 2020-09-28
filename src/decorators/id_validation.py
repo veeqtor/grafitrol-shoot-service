@@ -22,6 +22,13 @@ def validate_id(func):
     return decorated_function
 
 
+def schema_id_validator(id):
+    """Used to validate id within schema"""
+
+    if not is_id_valid(id):
+        raise ValidationError(ERROR_MSG['SYS_006'])
+
+
 def check_id_valid(**kwargs):
     """Check if id is valid"""
 

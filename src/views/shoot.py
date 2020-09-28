@@ -2,6 +2,8 @@
 
 from flask import request
 from flask_restplus import Resource
+from sqlalchemy.orm import joinedload
+
 from main import endpoint
 from src.decorators.id_validation import validate_id
 from src.helpers.response import ResponseHandler
@@ -16,7 +18,7 @@ class ShootListView(Resource):
         """Get request"""
 
         schema = ShootListSchema()
-        shoots = Shoot.query.all()
+        shoots = Shoot.query.options(joinedload(Shoot.reservations)).all()
         resp = schema.dump(shoots, many=True)
         response = ResponseHandler(data=resp).get_response()
         return response
@@ -43,14 +45,9 @@ class ShootDetailView(Resource):
         """Get a single shoot"""
 
         schema = ShootListSchema()
-        shoot = Shoot.get(shoot_id)
-        if shoot:
-            resp = schema.dump(shoot)
-            response = ResponseHandler(data=resp).get_response()
-            return response
-        response = ResponseHandler(status='error',
-                                   msg_key='SYS_007',
-                                   status_code=404).get_response()
+        shoot = Shoot.get_or_404(shoot_id)
+        resp = schema.dump(shoot)
+        response = ResponseHandler(data=resp).get_response()
         return response
 
     @validate_id
@@ -61,18 +58,13 @@ class ShootDetailView(Resource):
         schema.__model__ = None
         req_data = schema.load(request.get_json(), partial=True)
 
-        shoot = Shoot.get(shoot_id)
-        if shoot:
-            shoot.update(**req_data)
+        shoot = Shoot.get_or_404(shoot_id)
+        shoot.update(**req_data)
 
-            resp = schema.dump(shoot)
-            response = ResponseHandler(msg_key='SYS_003',
-                                       data=resp,
-                                       status_code=200).get_response()
-            return response
-        response = ResponseHandler(status='error',
-                                   msg_key='SYS_007',
-                                   status_code=404).get_response()
+        resp = schema.dump(shoot)
+        response = ResponseHandler(msg_key='SYS_003',
+                                   data=resp,
+                                   status_code=200).get_response()
         return response
 
     @validate_id
@@ -80,15 +72,11 @@ class ShootDetailView(Resource):
         """Delete a single shoot"""
 
         schema = ShootListSchema()
-        shoot = Shoot.get(shoot_id)
-        if shoot:
-            resp = schema.dump(shoot)
-            shoot.delete()
-            response = ResponseHandler(data=resp,
-                                       msg_key='SYS_002',
-                                       status_code=200).get_response()
-            return response
-        response = ResponseHandler(status='error',
-                                   msg_key='SYS_007',
-                                   status_code=404).get_response()
+        shoot = Shoot.get_or_404(shoot_id)
+
+        resp = schema.dump(shoot)
+        shoot.delete()
+        response = ResponseHandler(data=resp,
+                                   msg_key='SYS_002',
+                                   status_code=200).get_response()
         return response

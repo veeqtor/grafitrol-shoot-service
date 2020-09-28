@@ -1,8 +1,8 @@
+"""Coordinator Schema"""
+
 from marshmallow import fields
 from src.models import Coordinator
 from src.schemas.base import BaseSchema
-
-from src.schemas.reservation import ReservationSchema
 
 
 class CoordinatorListSchema(BaseSchema):
@@ -16,13 +16,19 @@ class CoordinatorListSchema(BaseSchema):
     break_duration = fields.Integer(data_key='breakDuration', required=True)
     is_available = fields.Boolean(data_key='isAvailable')
     user = fields.String(required=True)
-    reservations = fields.Nested(ReservationSchema(many=True))
+    reservations = fields.Nested('src.schemas.reservation.ReservationSchema',
+                                 many=True,
+                                 exclude=['coordinator'])
 
 
 class CoordinatorSchema(CoordinatorListSchema):
     """Coordinator schema"""
 
     timeslots = fields.Method('get_available_timeslots')
+
+    class Meta:
+        """Meta class"""
+        exclude = ['reservations']
 
     def get_available_timeslots(self, obj):
         """Gets the available slot."""

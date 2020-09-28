@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta, date
 
 from main import local_tz, utc
+from src.models.reservations import ReservationStatusChoices
 from utils.datetime_helpers import localize_datetime
 
 INTERVAL = 15
@@ -78,13 +79,17 @@ def filter_slots(reserved_shoots, break_duration, break_start_time, day,
 		filtered slots (Generator): Updated Generator of slots with proper
 		availability
 	"""
+
+    statuses = [
+        ReservationStatusChoices.pending, ReservationStatusChoices.confirmed
+    ]
     slots_copy = [slot for slot in slots]
     for shoot in reserved_shoots:
         try:
             dt = shoot.reservation_datetime
             while dt < shoot.reservation_end_datetime:
                 slot = next(filter(lambda x: x['slot'] == dt, slots_copy))
-                if slot:
+                if slot and shoot.status in statuses:
                     slot['availability'] = False
                 dt = dt + timedelta(minutes=INTERVAL)
         except StopIteration:
@@ -175,3 +180,33 @@ def get_preferred_coordinator(coordinators, date):
         slots = preferred_coordinator.get_slots_by_date(date)
         return preferred_coordinator, get_localized_slots(slots)
     return None
+
+
+def is_duration_available(start, end, slots):
+    """
+	Checks that the coordinator can accommodate the duration
+
+	Args:
+		start (datetime): The start datetime
+		end (datetime): The end datetime
+		slots (list): A list of available slots
+
+	Returns:
+		bool
+	"""
+
+    is_valid = True
+    try:
+        found = next(
+            filter(lambda x: x['slot'] == start and x['availability'], slots))
+        if found:
+            while start <= end:
+                exist = any(s['slot'] == start and s['availability']
+                            for s in slots)
+                if not exist:
+                    is_valid = False
+                    break
+                start = start + timedelta(minutes=INTERVAL)
+    except StopIteration:
+        is_valid = False
+    return is_valid

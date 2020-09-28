@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import Column, Integer, DateTime, String, exists
 
 from database.config import Base, db_session
-from utils.exceptions import DataConflictException
+from utils.exceptions import DataConflictException, ResponseException
 from utils.id_generator import IDGenerator
 
 
@@ -53,6 +53,17 @@ class ModelOperation(object):
 		Returns an entry by id
 		"""
         return cls.query.filter_by(id=id).first()
+
+    @classmethod
+    def get_or_404(cls, id):
+        """
+	    Return an entry or throws a 404 if not found
+	    """
+        entry = cls.get(id)
+        msg = f'{cls.__name__} not found.'
+        if not entry:
+            raise ResponseException(msg, 404)
+        return entry
 
     @classmethod
     def exists(cls, value, column='id'):
