@@ -11,7 +11,7 @@ from src.decorators.id_validation import validate_id
 from src.helpers.messages import ERROR_MSG
 from src.helpers.response import ResponseHandler
 from src.helpers.shoots_slots import get_preferred_coordinator
-from src.models import Coordinator
+from src.models.coordinators import Coordinator
 from src.schemas.coordinator import CoordinatorSchema, CoordinatorListSchema
 from utils.exceptions import ResponseException
 
@@ -46,7 +46,8 @@ class CoordinatorListView(Resource):
                 raise ResponseException(ERROR_MSG['SYS_003'], 400)
         else:
             schema = CoordinatorListSchema()
-            coordinators = Coordinator.query.all()
+            coordinators = Coordinator.query.options(
+                joinedload(Coordinator.reservations)).all()
             resp = schema.dump(coordinators, many=True)
             response = ResponseHandler(data=resp).get_response()
             return response
@@ -72,14 +73,9 @@ class CoordinatorDetailView(Resource):
         """Get a single coordinator"""
 
         schema = CoordinatorListSchema()
-        coordinator = Coordinator.get(coordinator_id)
-        if coordinator:
-            resp = schema.dump(coordinator)
-            response = ResponseHandler(data=resp).get_response()
-            return response
-        response = ResponseHandler(status='error',
-                                   msg_key='SYS_007',
-                                   status_code=404).get_response()
+        coordinator = Coordinator.get_or_404(coordinator_id)
+        resp = schema.dump(coordinator)
+        response = ResponseHandler(data=resp).get_response()
         return response
 
     @validate_id
@@ -90,18 +86,13 @@ class CoordinatorDetailView(Resource):
         schema.__model__ = None
         req_data = schema.load(request.get_json(), partial=True)
 
-        coordinator = Coordinator.get(coordinator_id)
-        if coordinator:
-            coordinator.update(**req_data)
+        coordinator = Coordinator.get_or_404(coordinator_id)
+        coordinator.update(**req_data)
 
-            resp = schema.dump(coordinator)
-            response = ResponseHandler(msg_key='SYS_003',
-                                       data=resp,
-                                       status_code=200).get_response()
-            return response
-        response = ResponseHandler(status='error',
-                                   msg_key='SYS_007',
-                                   status_code=404).get_response()
+        resp = schema.dump(coordinator)
+        response = ResponseHandler(msg_key='SYS_003',
+                                   data=resp,
+                                   status_code=200).get_response()
         return response
 
     @validate_id
@@ -109,15 +100,11 @@ class CoordinatorDetailView(Resource):
         """Delete a single coordinator"""
 
         schema = CoordinatorListSchema()
-        coordinator = Coordinator.get(coordinator_id)
-        if coordinator:
-            resp = schema.dump(coordinator)
-            coordinator.delete()
-            response = ResponseHandler(data=resp,
-                                       msg_key='SYS_002',
-                                       status_code=200).get_response()
-            return response
-        response = ResponseHandler(status='error',
-                                   msg_key='SYS_007',
-                                   status_code=404).get_response()
+        coordinator = Coordinator.get_or_404(coordinator_id)
+
+        resp = schema.dump(coordinator)
+        coordinator.delete()
+        response = ResponseHandler(data=resp,
+                                   msg_key='SYS_002',
+                                   status_code=200).get_response()
         return response

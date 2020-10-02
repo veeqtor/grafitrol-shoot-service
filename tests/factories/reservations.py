@@ -6,7 +6,7 @@ from faker import Factory as FakerFactory
 
 from main import utc
 from src.models import Reservation
-from src.models.reservations import StatusChoices
+from src.models.reservations import ReservationStatusChoices
 from tests.factories import CoordinatorFactory, ShootFactory
 from tests.factories.base import BaseFactory
 
@@ -22,8 +22,8 @@ class ReservationsFactory(BaseFactory):
     phone = factory.LazyAttribute(lambda x: faker.phone_number())
     reservation_datetime = factory.LazyAttribute(
         lambda x: datetime.now(tz=utc) + timedelta(days=2))
-    duration = factory.Iterator([60, 70, 120])
-    status = factory.Iterator(StatusChoices)
+    duration = factory.Iterator([60, 90, 120])
+    status = factory.Iterator(ReservationStatusChoices)
     coordinator = factory.SubFactory(CoordinatorFactory)
     shoot = factory.SubFactory(ShootFactory)
 

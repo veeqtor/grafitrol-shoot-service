@@ -4,7 +4,6 @@ from marshmallow import fields
 from src.models import Shoot
 from src.schemas.base import BaseSchema
 from src.schemas.fields import StringField
-from src.schemas.reservation import ReservationSchema
 
 
 class ShootListSchema(BaseSchema):
@@ -19,8 +18,6 @@ class ShootListSchema(BaseSchema):
     description = fields.String()
     price = fields.Float(required=True)
     duration = fields.Integer(required=True)
-
-
-class ShootDetailWithReservationSchema(ShootListSchema):
-    """Shoot detail with reservation schema"""
-    reservations = fields.Nested(ReservationSchema(many=True))
+    reservations = fields.Nested('src.schemas.reservation.ReservationSchema',
+                                 many=True,
+                                 exclude=['shoot', 'coordinator'])

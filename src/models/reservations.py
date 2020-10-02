@@ -11,13 +11,14 @@ from src.models.base import BaseModel
 from utils.datetime_helpers import localize_datetime
 
 
-class StatusChoices(enum.Enum):
+class ReservationStatusChoices(enum.Enum):
     """
 	Reservation status enums
 	"""
-    Pending = '0'
-    Completed = '1'
-    Done = '2'
+    pending = '0'
+    completed = '1'
+    confirmed = '2'
+    cancelled = '3'
 
 
 class Reservation(BaseModel):
@@ -28,17 +29,19 @@ class Reservation(BaseModel):
     UNIQUE_VIOLATION_MSG = 'Reservation already Exists'
 
     STATUS_ENUM = ENUM(
-        StatusChoices,
+        ReservationStatusChoices,
         name='reservation_status',
     )
 
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
-    email = Column(String(100), nullable=False, unique=True)
-    phone = Column(String(100), nullable=False, unique=True)
+    email = Column(String(100), nullable=False)
+    phone = Column(String(100), nullable=False)
     additional_info = Column(Text, nullable=True)
 
-    status = Column(STATUS_ENUM, nullable=False, default='0')
+    status = Column(STATUS_ENUM,
+                    nullable=False,
+                    default=ReservationStatusChoices.pending)
     reservation_datetime = Column(DateTime(timezone=True), nullable=False)
     duration = Column(Integer, nullable=False, default=30)
 
