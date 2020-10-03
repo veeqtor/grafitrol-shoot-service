@@ -9,10 +9,12 @@ ERROR_MSG = {
     'SYS_006': 'Invalid ID provided.',
     'SYS_007': 'Not found.',
     'SYS_008': 'Missing data for required field.',
+    'SYS_009': '{} not found.',
+    'SYS_010': 'Missing data for required field.',
     'CO_001': 'No coordinator available.',
     'RES_001': 'Cannot process reservation, slot not available',
     'RES_002': 'Cannot perform this action.',
-    'RES_003': 'Cannot exceed shoot duration.',
+    'RES_003': 'Duration must be the same the shoot duration.',
 }
 
 SUCCESS_MSG = {

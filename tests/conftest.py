@@ -76,3 +76,10 @@ def new_shoots(db_session):
     """Create new shoots"""
     from tests.factories import ShootFactory
     return ShootFactory.create_batch(size=10)
+
+
+@pytest.fixture(scope="function")
+def new_reservations(db_session):
+    """Create new reservations"""
+    from tests.factories import ReservationsFactory
+    return ReservationsFactory.create_batch(size=10)
