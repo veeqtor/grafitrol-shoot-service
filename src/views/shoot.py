@@ -8,7 +8,7 @@ from main import endpoint
 from src.decorators.id_validation import validate_id
 from src.helpers.response import ResponseHandler
 from src.models import Shoot
-from src.schemas.shoot import ShootListSchema
+from src.schemas.shoot import ShootListSchema, ShootDetailSchema
 
 
 @endpoint('/shoot')
@@ -44,7 +44,7 @@ class ShootDetailView(Resource):
     def get(self, shoot_id):
         """Get a single shoot"""
 
-        schema = ShootListSchema()
+        schema = ShootDetailSchema()
         shoot = Shoot.get_or_404(shoot_id)
         resp = schema.dump(shoot)
         response = ResponseHandler(data=resp).get_response()
@@ -54,7 +54,7 @@ class ShootDetailView(Resource):
     def patch(self, shoot_id):
         """Update a single shoot"""
 
-        schema = ShootListSchema()
+        schema = ShootDetailSchema()
         schema.__model__ = None
         req_data = schema.load(request.get_json(), partial=True)
 
@@ -71,7 +71,7 @@ class ShootDetailView(Resource):
     def delete(self, shoot_id):
         """Delete a single shoot"""
 
-        schema = ShootListSchema()
+        schema = ShootDetailSchema()
         shoot = Shoot.get_or_404(shoot_id)
 
         resp = schema.dump(shoot)

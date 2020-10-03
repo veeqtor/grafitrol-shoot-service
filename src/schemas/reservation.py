@@ -11,7 +11,7 @@ from src.schemas.base import BaseSchema
 from src.schemas.fields import StringField
 from src.models import Reservation, Coordinator, Shoot
 from src.schemas.coordinator import CoordinatorListSchema
-from src.schemas.shoot import ShootListSchema
+from src.schemas.shoot import ShootDetailSchema
 from utils.datetime_helpers import convert_to_utc
 from utils.exceptions import ResponseException
 
@@ -64,7 +64,7 @@ class ReservationSchema(BaseSchema):
     coordinator = fields.Nested(CoordinatorListSchema,
                                 exclude=['reservations'],
                                 dump_only=True)
-    shoot = fields.Nested(ShootListSchema,
+    shoot = fields.Nested(ShootDetailSchema,
                           exclude=['reservations'],
                           required=True,
                           dump_only=True)

@@ -18,6 +18,11 @@ class ShootListSchema(BaseSchema):
     description = fields.String()
     price = fields.Float(required=True)
     duration = fields.Integer(required=True)
+
+
+class ShootDetailSchema(ShootListSchema):
+    """Shoot detail schema"""
+
     reservations = fields.Nested('src.schemas.reservation.ReservationSchema',
                                  many=True,
                                  exclude=['shoot', 'coordinator'])

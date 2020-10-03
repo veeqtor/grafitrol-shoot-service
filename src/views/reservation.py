@@ -4,9 +4,12 @@ from sqlalchemy.orm import joinedload
 
 from main import endpoint
 from src.decorators.id_validation import validate_id
+from src.helpers.messages import ERROR_MSG
 from src.helpers.response import ResponseHandler
 from src.models import Reservation
+from src.models.reservations import ReservationStatusChoices
 from src.schemas.reservation import ReservationSchema
+from utils.exceptions import ResponseException
 
 
 @endpoint('/reservation')
@@ -58,6 +61,12 @@ class ReservationDetailView(Resource):
         schema.__model__ = None
         req_data = schema.load(request.get_json(), partial=True)
         reservation = Reservation.get_or_404(reservation_id)
+        statuses = [
+            ReservationStatusChoices.cancelled,
+            ReservationStatusChoices.completed
+        ]
+        if reservation.status in statuses:
+            raise ResponseException(ERROR_MSG['RES_002'], 400)
         reservation.update(**req_data)
         resp = schema.dump(reservation)
         response = ResponseHandler(msg_key='SYS_003',

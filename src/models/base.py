@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import Column, Integer, DateTime, String, exists
 
 from database.config import Base, db_session
+from src.helpers.messages import ERROR_MSG
 from utils.exceptions import DataConflictException, ResponseException
 from utils.id_generator import IDGenerator
 
@@ -60,7 +61,7 @@ class ModelOperation(object):
 	    Return an entry or throws a 404 if not found
 	    """
         entry = cls.get(id)
-        msg = f'{cls.__name__} not found.'
+        msg = ERROR_MSG['SYS_009'].format(cls.__name__)
         if not entry:
             raise ResponseException(msg, 404)
         return entry

@@ -2,7 +2,6 @@
 
 import json
 from os import getenv
-from datetime import datetime, timedelta
 
 from src.helpers.messages import ERROR_MSG, SUCCESS_MSG
 from src.models import Shoot
@@ -12,7 +11,7 @@ shoot_url = BASE_URL + '/shoot'
 
 
 class TestShootView:
-    """Test the flask application"""
+    """Test the shoot view"""
     def test__create_shoot_succeeds(self, client, db_session):
         """Should create a shoot."""
         payload = {
